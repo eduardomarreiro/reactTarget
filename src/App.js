@@ -12,6 +12,8 @@ function App() {
   const baseUrl = "https://localhost:44316/api/person";
 
   const [data, setData] = useState([]);
+  const [updateData, seUpdateData] = useState(true);
+
   const [includeModal, setIncludeModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -69,6 +71,7 @@ function App() {
     await axios.post(baseUrl, selectedPerson)
       .then(response => {
         setData(data.concat(response.data));
+        seUpdateData(true);
         openCloseIncludeModal();
       }).catch(error => {
         console.log(error);
@@ -91,6 +94,7 @@ function App() {
           }
           console.log("response")
         });
+        seUpdateData(true);
         openCloseEditModal();
       }).catch(error => {
         console.log(error);
@@ -102,6 +106,7 @@ function App() {
     await axios.delete(baseUrl + "?id=" + selectedPerson.Id)
     .then(response =>{
       setData(data.filter(person => person.Id !== response.data));
+      seUpdateData(true);
         openCloseDeleteModal();
     }).catch(error => {
       console.log(error);
@@ -109,8 +114,11 @@ function App() {
   }
 
   useEffect(() => {
-    askGet();
-  })
+    if(updateData){
+      askGet();
+      seUpdateData(false);
+    }
+  }, [updateData])
 
 
   return (
