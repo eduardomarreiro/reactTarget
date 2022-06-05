@@ -14,6 +14,7 @@ function App() {
   const [data, setData] = useState([]);
   const [includeModal, setIncludeModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const [selectedPerson, setSelectedPerson] = useState(
     {
@@ -27,8 +28,8 @@ function App() {
 
   const selectPerson = (person, option) => {
     setSelectedPerson(person);
-    (option === "Edit") &&
-      openCloseEditModal()
+    (option === "Edit") ?
+      openCloseEditModal() : openCloseDeleteModal();
   }
 
   const openCloseIncludeModal = () => {
@@ -37,6 +38,10 @@ function App() {
 
   const openCloseEditModal = () => {
     setEditModal(!editModal);
+  }
+
+  const openCloseDeleteModal = () => {
+    setDeleteModal(!deleteModal);
   }
 
 
@@ -90,6 +95,17 @@ function App() {
       }).catch(error => {
         console.log(error);
       })
+  }
+
+
+  const askDelete = async() =>{
+    await axios.delete(baseUrl + "?id=" + selectedPerson.Id)
+    .then(response =>{
+      setData(data.filter(person => person.Id !== response.data));
+        openCloseDeleteModal();
+    }).catch(error => {
+      console.log(error);
+    })
   }
 
   useEffect(() => {
@@ -166,7 +182,6 @@ function App() {
         </ModalFooter>
       </Modal>
 
-
       <Modal isOpen={editModal}>
         <ModalHeader>Edit person</ModalHeader>
         <ModalBody>
@@ -206,6 +221,16 @@ function App() {
         </ModalFooter>
       </Modal>
 
+      <Modal isOpen={deleteModal}>
+        <ModalBody>
+          Are you sure you want to delete this person : {selectedPerson && selectedPerson.Username} ?
+        </ModalBody>
+        <ModalFooter>
+          <button className="btn btn-danger" onClick={()=>askDelete()}>Yes</button>
+          <button className="btn btn-secondary" onClick={() => openCloseDeleteModal()}>No</button>
+        </ModalFooter>
+
+      </Modal>
 
     </div>
   );
