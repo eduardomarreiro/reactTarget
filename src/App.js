@@ -13,6 +13,7 @@ function App() {
 
   const [data, setData] = useState([]);
   const [includeModal, setIncludeModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
 
   const[selectedPerson, setSelectedPerson]=useState(
     {
@@ -24,9 +25,20 @@ function App() {
        Phone: ''
     })
 
+    const selectPerson = (person, option) =>{
+      setSelectedPerson(person);
+      (option === "Edit") &&
+        openCloseEditModal()
+    }
+
     const openCloseIncludeModal=()=>{
       setIncludeModal(!includeModal);
     }
+
+    const openCloseEditModal=()=>{
+      setEditModal(!editModal);
+    }
+
 
     const handleChange=e=>{
         const{name,value}=e.target;
@@ -57,6 +69,27 @@ function App() {
       console.log(error);
     })
   }
+
+  const askPut=async()=> {
+    selectedPerson.Born=parseInt(selectedPerson.Born);
+  await axios.put(baseUrl+"/"+selectedPerson.Id, selectedPerson)
+  .then(response=>{
+   var answer = response.data;
+    var additionalData=data;
+   additionalData.map(person=>{
+      if(person.Id === selectedPerson.Id){
+        person.Username= answer.Username;
+        person.FullName= answer.FullName;
+        person.Born= answer.Born;
+        person.Email= answer.Email;
+        person.Phone= answer.Phone;
+      }
+    });
+    openCloseEditModal();
+ }).catch(error=>{
+    console.log(error);
+ })
+}
 
   useEffect(() =>{
     askGet();
@@ -93,8 +126,8 @@ function App() {
           <td>{person.Email}</td>
           <td>{person.Phone}</td>
           <td>
-            <button className="btn btn-primary">Edit</button>{""}
-            <button className="btn btn-danger">Delete</button>
+            <button className="btn btn-primary" onClick={() => selectPerson(person, "Edit")}>Edit</button>{""}
+            <button className="btn btn-danger" onClick={() => selectPerson(person, "Delete")}>Delete</button>
           </td>
         </tr>
         ))}
@@ -131,6 +164,49 @@ function App() {
         <button className="btn btn-danger" onClick={()=>openCloseIncludeModal()}>Cancel</button>
       </ModalFooter>
       </Modal>
+
+      
+      <Modal isOpen={editModal}>
+      <ModalHeader>Edit person</ModalHeader>
+      <ModalBody>
+        <div className="form-group">
+          <label>Id:</label>
+          <br /> 
+          <input type="text" className="form-control" readonly defaultValue={selectedPerson && selectedPerson.Id}/>
+          <label>Username:</label>
+          <br />
+          <input type="text"className="form-control" name="Username" onChange={handleChange}
+          defaultValue={selectPerson && selectPerson.Username}/>
+          <br />
+          <label>FullName:</label>
+            <br/>
+          <input type="text"className="form-control" name="FullName" onChange={handleChange}
+          defaultValue={selectPerson && selectPerson.FullName}/>
+          <br />
+          <label>Born:</label>
+          <br />
+          <input type="text"className="form-control" name="Born" onChange={handleChange}
+          defaultValue={selectPerson && selectPerson.Born}/>
+          <br />
+          <label>Email:</label>
+          <br />
+          <input type="text"className="form-control" name="Email" onChange={handleChange}
+          defaultValue={selectPerson && selectPerson.Email}/>
+          <br />
+          <label>Phone:</label>
+          <br />
+          <input type="text"className="form-control" name="Phone" onChange={handleChange}
+          defaultValue={selectPerson && selectPerson.Phone}/>
+          <br />
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <button className="btn btn-primary" onClick={()=>askPut()}>Edit</button>{""}
+        <button className="btn btn-danger" onClick={()=>openCloseEditModal()}>Cancel</button>
+      </ModalFooter>
+      </Modal>
+      
+
     </div>
   );
 }
