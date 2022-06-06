@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useEffectFrom, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -128,7 +128,8 @@ function App() {
       <header>
 
         <button className="btn btn-success" onClick={() => openCloseIncludeModal()}>Add new person</button>
-      </header>
+      </header><br/>
+      <div class="card rounded shadow-sm p-3 ">
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -151,13 +152,15 @@ function App() {
               <td>{person.Email}</td>
               <td>{person.Phone}</td>
               <td>
-                <button className="btn btn-primary" onClick={() => selectPerson(person, "Edit")}>Edit</button>{""}
+                <button className="btn btn-primary" onClick={() => selectPerson(person, "Edit")}>Edit</button>{" "}
                 <button className="btn btn-danger" onClick={() => selectPerson(person, "Delete")}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      </div>
       <Modal isOpen={includeModal}>
         <ModalHeader>Add person</ModalHeader>
         <ModalBody>
